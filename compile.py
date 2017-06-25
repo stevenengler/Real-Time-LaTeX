@@ -34,13 +34,13 @@ class ChangeHandler(PatternMatchingEventHandler):
 			# First, move up the directory tree to find the project file
 			modified_file = event.src_path
 			modified_dir = os.path.dirname(modified_file)
-			project_directory = self.getProjectDirectory(modified_dir, latex_project_filename)
+			project_directory = self.get_project_directory(modified_dir, latex_project_filename)
 			if project_directory is None:
 				print('Python script: Project file not found.')
 				return
 			#
 			# Using the project file, find the source file to be compiled
-			src_file = self.getSourceFile(project_directory, latex_project_filename)
+			src_file = self.get_source_file(project_directory, latex_project_filename)
 			if src_file is None:
 				print('Python script: Source file not found.')
 				return
@@ -66,7 +66,7 @@ class ChangeHandler(PatternMatchingEventHandler):
 			subprocess.call(''.join(commands), shell=True)
 			#
 			# Finally, the synctex has to be modified to use relative paths instead of absolute paths
-			self.fixSynctex(project_directory, compiled_path_relative_to_project_path, filename)
+			self.fix_synctex(project_directory, compiled_path_relative_to_project_path, filename)
 			#
 			print('Python script: Finished latexmk...')
 		except:
@@ -82,7 +82,7 @@ class ChangeHandler(PatternMatchingEventHandler):
 	def on_moved(self, event):
 		self.process(event)
 	#
-	def getProjectDirectory(self, startDir, projectFilename):
+	def get_project_directory(self, startDir, projectFilename):
 		project_directory = startDir
 		#
 		while os.path.isdir(project_directory) and not os.path.isfile(project_directory+'/'+projectFilename):
@@ -94,7 +94,7 @@ class ChangeHandler(PatternMatchingEventHandler):
 		#
 		return project_directory
 	#
-	def getSourceFile(self, projectDirectory, projectFilename):
+	def get_source_file(self, projectDirectory, projectFilename):
 		with open(projectDirectory+'/'+projectFilename, 'r') as f:
 			for line in f:
 				file_to_compile = line.strip()
@@ -111,12 +111,14 @@ class ChangeHandler(PatternMatchingEventHandler):
 		src_file = projectDirectory+'/'+file_to_compile
 		return src_file
 	#
-	def fixSynctex(self, project_directory, compiled_path_relative_to_project_path, filename):
+	def fix_synctex(self, project_directory, compiled_path_relative_to_project_path, filename):
 		old_synctex = project_directory+'/'+compiled_path_relative_to_project_path+'/'+filename+'.synctex'
 		new_synctex = project_directory+'/'+compiled_path_relative_to_project_path+'/'+filename+'.synctex.new'
+		#
 		if os.path.isfile(old_synctex):
 			f1 = open(old_synctex, 'r')
 			f2 = open(new_synctex, 'w')
+			#
 			project_path_relative_to_compiled_path = os.path.relpath(project_directory, project_directory+'/'+compiled_path_relative_to_project_path)
 			for line in f1:
 				f2.write(line.replace(os.path.abspath(project_directory), project_path_relative_to_compiled_path))
@@ -142,8 +144,8 @@ if __name__ == '__main__':
 		os.makedirs(directory)
 	#
 	observer.schedule(handler, directory, recursive=True)
-	# Only search in the LaTeX directory
 	observer.start()
+	#
 	try:
 		while True:
 			time.sleep(60*5)
@@ -154,5 +156,5 @@ if __name__ == '__main__':
 	#
 	observer.join()
 	print('')
-	# add an extra new line
+	# Add an extra new line
 #
