@@ -6,7 +6,7 @@ tl_installer_url="http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.ta
 #       https://www.tug.org/texlive/acquire-netinstall.html
 #
 echo "The script will update the APT package list, install python3-watchdog, download the TeX Live"\
-     "installation scripts to \"$tl_download_directory\", and install TeX Live."
+     "installation scripts to \"$tl_download_directory\", install TeX Live, and install latexmk with tlmgr."
 #
 echo ""
 echo "Do you want to continue?"
