@@ -1,0 +1,12 @@
+# These files are text and should be normalized
+# Summary of text option (https://git-scm.com/docs/gitattributes):
+#   This attribute enables and controls end-of-line normalization. When a text file is normalized, its line endings are converted to LF in the repository.
+#   To control what line ending style is used in the working directory, use the eol attribute for a single file and the core.eol configuration variable for all text files.
+
+*.py text
+*.sh text
+*.txt text
+*.md text
+*.xml text
+*.bat text
+*.yaml text
