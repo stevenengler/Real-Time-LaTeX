@@ -36,3 +36,13 @@ Just create a `my_report/latex_project.config` file containing the line `src/rep
 ### Running the compiler script
 
 Open a command prompt window with Bash in your project directory (the `my_report` directory in the example above). Run the command `python3 ~/Real-Time-LaTeX/compile.py`. Now anytime you make a change to a \*.tex file in your project folder, the tex file linked to from your `latex_project.config` file will be compiled into the `compiled` directory.
+
+## Examples
+
+You can use any text editor and any PDF viewer, as long as the PDF viewer can automatically refresh the PDF when there is a new version available. Notepad++ and SumatraPDF work very well together, both supporting SyncTeX and quick updates to the viewer.
+
+Notepad++ and SumatraPDF:
+![alt text](images/npp_example.png "Notepad++ and SumatraPDF")
+
+Atom:
+![alt text](images/atom_example.png "Atom Editor")
