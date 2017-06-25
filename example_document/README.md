@@ -1,0 +1,1 @@
+To compile this document, set this directory as the working directory and run `python3 ~/Real-Time-LaTeX/compile.py`. As soon as you edit and save the `source/example_document.tex` file with your favorite text editor, it will be compiled automatically into the `compiled/` directory.

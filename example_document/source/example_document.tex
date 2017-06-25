@@ -1,0 +1,26 @@
+\documentclass[12pt]{article}
+
+\title{Real-Time-\LaTeX{}}
+\author{Steven Engler}
+\date{June 25, 2017}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Easily set up a vanilla TeX Live environment and run a python script to compile LaTeX source code in real-time. Supports Ubuntu and Windows 10 with the Windows Subsystem for Linux (WSL).
+
+\section{Project Directory}
+The project directory is the directory containing the \textit{latex\_project.config} file. This configuration file must contain one line (lines beginning with a '\#' character are ignored) that points to the \TeX{} file to be compiled. For example, if the file contains the single line (without the line number):
+
+\vspace*{0.5\baselineskip}
+1. \textit{/source/document.tex}
+\vspace*{0.5\baselineskip}
+
+\noindent then the file document.tex will be compiled with latexmk and pdflatex. The compilation occurs in the project directory, so all imports (including images) must be included with respect to the project directory.
+
+\section{Compile a Document}
+To compile a document (like this one) simply run the command ``\textit{python3 \$HOME/Real-Time-LaTeX/compile.py}'' from the project directory. This will watch for changes to any *.tex files that are in the current directory. If a *.tex file is modified, it is automatically compiled into the \textit{compiled/} directory in the project directory.
+
+\end{document}
