@@ -41,8 +41,8 @@ Open a command prompt window with Bash in your project directory (the `my_report
 
 You can use any text editor and any PDF viewer, as long as the PDF viewer can automatically refresh the PDF when there is a new version available. Notepad++ and SumatraPDF work very well together, both supporting SyncTeX and quick updates to the viewer.
 
-Notepad++ and SumatraPDF:
+#### Notepad++ and SumatraPDF:
 ![alt text](images/npp_example.png "Notepad++ and SumatraPDF")
 
-Atom:
+#### Atom:
 ![alt text](images/atom_example.png "Atom Editor")
