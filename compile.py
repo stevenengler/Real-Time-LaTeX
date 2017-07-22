@@ -40,33 +40,34 @@ class ChangeHandler(PatternMatchingEventHandler):
 				return
 			#
 			# Using the project file, find the source file to be compiled
-			src_file = self.get_source_file(project_directory, latex_project_filename)
-			if src_file is None:
-				print('Python script: Source file not found.')
+			src_files = self.get_source_files(project_directory, latex_project_filename)
+			if src_files is None or len(src_files) == 0:
+				print('Python script: Source files not found.')
 				return
-			src_dir = os.path.dirname(src_file)
 			#
-			# Now the tex file can be compiled
-			src_file_relative_to_project_path = os.path.relpath(src_file, project_directory)
-			filename = os.path.splitext(os.path.basename(src_file))[0]
-			#
-			# Reasoning for commands is listed below:
-			#    -recorder-		: Since Tex Live changed the filename structure of the texlive#.lsf(?), Latexmk cannot use these files properly and gives an error. Hopefully latexmk will fix this in the future
-			#    -synctex=-1	: We need to edit the synctex later, so don't compress it
-			#    -interaction=nonstopmode	: We don't want the script to prompt for input when errors occur
-			#    -file-line-error	: Gives more detailed error messages
-			commands = []
-			commands.append("cd \""+project_directory+"\"")
-			commands.append(" && mkdir -p \""+compiled_path_relative_to_project_path+"\"")
-			commands.append(" && latexmk -pdf -recorder- -outdir=\""+compiled_path_relative_to_project_path+"\" -aux-directory=\""+compiled_path_relative_to_project_path+"\" -pdflatex='pdflatex -synctex=-1 -interaction=nonstopmode -file-line-error' \""+src_file_relative_to_project_path+"\"")
-			commands.append(" | grep -A 5 '.*:[0-9]*:.*\\|!.*'")
-			commands.append(" > \""+compiled_path_relative_to_project_path+'/'+filename+".err\"")
-			#
-			print(''.join(commands))
-			subprocess.call(''.join(commands), shell=True)
-			#
-			# Finally, the synctex has to be modified to use relative paths instead of absolute paths
-			self.fix_synctex(project_directory, compiled_path_relative_to_project_path, filename)
+			for src_file in src_files:
+				print('Python script: Starting file \''+src_file+'\'')
+				# Now the tex file can be compiled
+				src_file_relative_to_project_path = os.path.relpath(src_file, project_directory)
+				filename = os.path.splitext(os.path.basename(src_file))[0]
+				#
+				# Reasoning for commands is listed below:
+				#    -recorder-		: Since Tex Live changed the filename structure of the texlive#.lsf(?), Latexmk cannot use these files properly and gives an error. Hopefully latexmk will fix this in the future
+				#    -synctex=-1	: We need to edit the synctex later, so don't compress it
+				#    -interaction=nonstopmode	: We don't want the script to prompt for input when errors occur
+				#    -file-line-error	: Gives more detailed error messages
+				commands = []
+				commands.append("cd \""+project_directory+"\"")
+				commands.append(" && mkdir -p \""+compiled_path_relative_to_project_path+"\"")
+				commands.append(" && latexmk -pdf -recorder- -outdir=\""+compiled_path_relative_to_project_path+"\" -aux-directory=\""+compiled_path_relative_to_project_path+"\" -pdflatex='pdflatex -synctex=-1 -interaction=nonstopmode -file-line-error' \""+src_file_relative_to_project_path+"\"")
+				commands.append(" | grep -A 5 '.*:[0-9]*:.*\\|!.*'")
+				commands.append(" > \""+compiled_path_relative_to_project_path+'/'+filename+".err\"")
+				#
+				print(''.join(commands))
+				subprocess.call(''.join(commands), shell=True)
+				#
+				# Finally, the synctex has to be modified to use relative paths instead of absolute paths
+				self.fix_synctex(project_directory, compiled_path_relative_to_project_path, filename)
 			#
 			print('Python script: Finished latexmk...')
 		except:
@@ -94,22 +95,25 @@ class ChangeHandler(PatternMatchingEventHandler):
 		#
 		return project_directory
 	#
-	def get_source_file(self, projectDirectory, projectFilename):
+	def get_source_files(self, projectDirectory, projectFilename):
+		files_to_compile = []
 		with open(projectDirectory+'/'+projectFilename, 'r') as f:
 			for line in f:
-				file_to_compile = line.strip()
-				if file_to_compile[0] != '#':
-					# if first non-whitespace character is not a '#'
-					break
+				line = line.strip()
+				if len(line) > 0 and line[0] != '#':
+					# if first non-whitespace character is not a '#' and line is not empty
+					files_to_compile.append(line)
 				#
 			#
 		#
-		if not os.path.isfile(projectDirectory+'/'+file_to_compile):
-			print(projectDirectory+'/'+file_to_compile)
-			return None
+		for x in range(len(files_to_compile)):
+			if not os.path.isfile(projectDirectory+'/'+files_to_compile[x]):
+				print('Python script: Not a file ('+projectDirectory+'/'+files_to_compile[x]+')')
+				files_to_compile[x] = None
+			#
 		#
-		src_file = projectDirectory+'/'+file_to_compile
-		return src_file
+		src_files = [projectDirectory+'/'+f for f in files_to_compile if f is not None]
+		return src_files
 	#
 	def fix_synctex(self, project_directory, compiled_path_relative_to_project_path, filename):
 		old_synctex = project_directory+'/'+compiled_path_relative_to_project_path+'/'+filename+'.synctex'
